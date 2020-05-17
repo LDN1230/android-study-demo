@@ -1,0 +1,2 @@
+include ':HelloWorld', ':selfdefineview', ':layoutdemo', ':textviewdemo', ':imageviewdemo', ':adapterviewdemo', ':progressbardemo', ':viewanimatordemo'
+rootProject.name='android study demo'

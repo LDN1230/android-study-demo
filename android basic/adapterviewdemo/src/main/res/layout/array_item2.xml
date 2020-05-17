@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/myTextView2"
+    android:textSize="24dp"
+    android:padding="5dp"
+    android:shadowColor="#f0ff"
+    android:shadowDx="4"
+    android:shadowDy="4"
+    android:shadowRadius="2"
+    android:checked="true">
+</CheckedTextView>

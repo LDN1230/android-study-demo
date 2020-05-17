@@ -1,0 +1,47 @@
+
+//创建任务方式一：
+// 任务1
+// task hello1{
+	// println "新建一个任务" // println语句是在配置阶段执行
+// }
+
+// 任务2
+// task hello2{
+	// println "新建第二个任务"
+	// doLast {
+		// for(i in 0..<5){
+			// println i
+		// }
+	// }
+	// doFirst {
+		// def s = "Danny"
+		// println "开始执行第二个任务：$s"
+	// }
+// }
+
+//创建任务方式二：
+// tasks.create(name: 'showTasks'){
+	// doLast{
+		// println "tasks属性的类型：${tasks.class}"
+		// tasks.each{e->
+			// println e
+		// }
+	// }
+// }
+
+//通过gradle来编译和运行java文件：
+// apply plugin: 'java'
+// task compile(type:JavaCompile){
+	// source = fileTree('src/main/java')
+	// classpath = sourceSets.main.compileClasspath
+	// destinationDir = file('build/classes/main')
+	// options.fork = true
+	// options.incremental = true
+// }
+// task run(type:JavaExec, dependsOn:'compile'){
+	// classpath = sourceSets.main.runtimeClasspath
+	// main = 'HelloWorld'
+// }
+
+
+//
