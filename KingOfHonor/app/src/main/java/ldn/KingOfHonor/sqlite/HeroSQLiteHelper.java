@@ -5,16 +5,21 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.icu.text.DecimalFormat;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import ldn.KingOfHonor.model.Equipment;
 import ldn.KingOfHonor.model.Hero;
+import ldn.KingOfHonor.model.Inscription;
+import ldn.KingOfHonor.model.Skill;
 
 /**
  * @author: LDN
@@ -132,9 +137,9 @@ public class HeroSQLiteHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-    // Books table name
+    // 英雄数据表
     private static final String TABLE_HEROES = "heroes";
-    // Books Table Columns names
+    // 英雄数据表的列名
     private static final String KEY_NAME = "name";
     private static final String KEY_ALIAS = "alias";
     private static final String KEY_IMAGE = "image";
@@ -337,6 +342,7 @@ public class HeroSQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // 装备数据表
     private static final String EQUIPMENT_TABLE = "equipments";
 
     /**
@@ -359,6 +365,221 @@ public class HeroSQLiteHelper extends SQLiteOpenHelper {
         values.clear();
         db.close();
     }
+
+    /**
+     * @description 获取所有的装备
+     * @return 返回一个ArrayList<Equipment>
+     * @author LDN
+     * @time 2020/5/25 15:59
+     */
+    public ArrayList<Equipment> getAllEquipment(){
+        ArrayList<Equipment> equipmentList = new ArrayList<Equipment>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from equipments", null);
+        if (cursor.moveToFirst()){
+            do{
+                Equipment equipment = new Equipment();
+                equipment.setImage(cursor.getInt(cursor.getColumnIndex("image")));
+                equipment.setName(cursor.getString(cursor.getColumnIndex("name")));
+                equipment.setPrice(cursor.getInt(cursor.getColumnIndex("price")));
+                equipment.setProperty(cursor.getString(cursor.getColumnIndex("property")));
+                equipment.setSkill(cursor.getString(cursor.getColumnIndex("skill")));
+                equipment.setProcess(cursor.getString(cursor.getColumnIndex("process")));
+                equipment.setCategory(cursor.getString(cursor.getColumnIndex("category")));
+                equipmentList.add(equipment);
+            }while(cursor.moveToNext());
+        }
+        return equipmentList;
+    }
+
+    /**
+     * @description 删除所有的装备
+     * @author LDN
+     * @time 2020/5/25 16:20
+     */
+    public void deleteAllEquipments(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("equipments", null, null);
+        db.close();
+    }
+
+    /**
+     * @description 获取某类的所有装备
+     * @param categoryId:类别id
+     * @return ArrayList<Equipment>
+     * @author LDN
+     * @time 2020/5/31 8:44
+     */
+    public ArrayList<Equipment> getEquipmentsWithCategory(String categoryId){
+        ArrayList<Equipment> equipmentArrayList = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from equipments where category = ?", new String[]{categoryId});
+        if(cursor.moveToFirst()){
+            do{
+                Equipment equipment = new Equipment();
+                equipment.setImage(cursor.getInt(cursor.getColumnIndex("image")));
+                equipment.setName(cursor.getString(cursor.getColumnIndex("name")));
+                equipment.setPrice(cursor.getInt(cursor.getColumnIndex("price")));
+                equipment.setProperty(cursor.getString(cursor.getColumnIndex("property")));
+                equipment.setSkill(cursor.getString(cursor.getColumnIndex("skill")));
+                equipment.setProcess(cursor.getString(cursor.getColumnIndex("process")));
+                equipment.setCategory(cursor.getString(cursor.getColumnIndex("category")));
+                equipmentArrayList.add(equipment);
+            }while (cursor.moveToNext());
+        }
+        return equipmentArrayList;
+    }
+
+    /**
+     * @description 获取指定名字的装备
+     * @param name:装备的名字
+     * @return Equipment
+     * @author LDN
+     * @time 2020/5/31 8:46
+     */
+    public Equipment getEquipmentsWithName(String name){
+        Equipment equipment = new Equipment();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from equipments where name = ?", new String[]{name});
+        if(cursor.moveToFirst()){
+            equipment.setImage(cursor.getInt(cursor.getColumnIndex("image")));
+            equipment.setName(cursor.getString(cursor.getColumnIndex("name")));
+            equipment.setPrice(cursor.getInt(cursor.getColumnIndex("price")));
+            equipment.setProperty(cursor.getString(cursor.getColumnIndex("property")));
+            equipment.setSkill(cursor.getString(cursor.getColumnIndex("skill")));
+            equipment.setProcess(cursor.getString(cursor.getColumnIndex("process")));
+            equipment.setCategory(cursor.getString(cursor.getColumnIndex("category")));
+        }
+        return equipment;
+    }
+
+    // 铭文数据表
+    private static final String INSCRIPTION_TABLE = "inscription";
+
+    /**
+     * @description 插入新的铭文
+     * @param inscription：铭文
+     * @author LDN
+     * @time 2020/5/31 8:59
+     */
+    public void addInscription(Inscription inscription) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", inscription.getName());
+        values.put("type", inscription.getType());
+        values.put("image", inscription.getImage());
+        values.put("level", inscription.getLevel());
+        String proString = "";
+        DecimalFormat df = new DecimalFormat("0.00");
+        int i = 0;
+        for (Map.Entry<String, Double> entry:inscription.getProperty().entrySet()) {
+            if(i != 0) {
+                proString += ", ";
+            }
+            proString += entry.getKey() + ": " + df.format(entry.getValue());
+            i++;
+        }
+        values.put("pro", proString);
+        values.put("color", inscription.getColor());
+        db.insert(INSCRIPTION_TABLE, null, values);
+        values.clear();
+        db.close();
+    }
+
+    /**
+     * @description 获取所有的铭文
+     * @return ArrayList<Inscription>
+     * @author LDN
+     * @time 2020/5/31 9:05
+     */
+    public ArrayList<Inscription> getAllInscription(){
+        ArrayList<Inscription> inscriptionList = new ArrayList<Inscription>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from inscription", null);
+        if (cursor.moveToFirst()){
+            do{
+                Inscription inscription = new Inscription(cursor.getString(cursor.getColumnIndex("name")), cursor.getString(cursor.getColumnIndex("type")), cursor.getInt(cursor.getColumnIndex("image")), cursor.getInt(cursor.getColumnIndex("level")), cursor.getString(cursor.getColumnIndex("color")));
+                String proString = cursor.getString(cursor.getColumnIndex("pro"));
+                String[] proArray = proString.split(", ");
+                for(int i = 0; i < proArray.length; i++) {
+                    String[] eachPro = proArray[i].split(": ");
+                    inscription.addProperty(eachPro[0], Double.valueOf(eachPro[1]));
+                }
+                inscriptionList.add(inscription);
+            }while(cursor.moveToNext());
+        }
+        return inscriptionList;
+    }
+
+    /**
+     * @description 删除所有的铭文
+     * @author LDN
+     * @time 2020/5/31 9:07
+     */
+    public void deleteAllInscription(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("inscription", null, null);
+        db.close();
+    }
+
+    // 技能数据表
+    private static final String SKILL_TABLE = "skills";
+
+    /**
+     * @description 插入技能
+     * @param skill：要插入的技能
+     * @author LDN
+     * @time 2020/5/31 9:18
+     */
+    public void addSkill(Skill skill){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("image", skill.getImage());
+        values.put("name", skill.getName());
+        values.put("image_detail", skill.getImage_detail());
+        values.put("detail1", skill.getDetail1());
+        values.put("detail2", skill.getDetail2());
+        db.insert(SKILL_TABLE, null, values);
+        values.clear();
+        db.close();
+    }
+
+    /**
+     * @description 获取所有的技能
+     * @return ArrayList<Skill>
+     * @author LDN
+     * @time 2020/5/31 9:21
+     */
+    public ArrayList<Skill> getAllSkill(){
+        ArrayList<Skill> skillList = new ArrayList<Skill>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from skills", null);
+        if (cursor.moveToFirst()){
+            do{
+                Skill skill = new Skill();
+                skill.setImage(cursor.getInt(cursor.getColumnIndex("image")));
+                skill.setName(cursor.getString(cursor.getColumnIndex("name")));
+                skill.setImage_detail(cursor.getInt(cursor.getColumnIndex("image_detail")));
+                skill.setDetail1(cursor.getString(cursor.getColumnIndex("detail1")));
+                skill.setDetail2(cursor.getString(cursor.getColumnIndex("detail2")));
+                skillList.add(skill);
+            }while(cursor.moveToNext());
+        }
+        return skillList;
+    }
+
+    /**
+     * @description 删除所有的技能
+     * @author LDN
+     * @time 2020/5/31 9:21
+     */
+    public void deleteAllSkills(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("skills", null, null);
+        db.close();
+    }
+
+
 
 
 }
