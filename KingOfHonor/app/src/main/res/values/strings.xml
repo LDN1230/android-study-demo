@@ -5,4 +5,5 @@
     <string name="title3">铭文</string>
     <string name="title4">技能</string>
     <string name="search_hero">请输入要搜索的英雄</string>
+    <string name="hero">英雄</string>
 </resources>
