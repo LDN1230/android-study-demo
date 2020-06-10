@@ -35,4 +35,5 @@ dependencies {
     implementation 'org.adw.library:discrete-seekbar:1.0.1'//进度条
     implementation 'androidx.cardview:cardview:1.0.0'//CardView
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0' // AppBarLayout
 }

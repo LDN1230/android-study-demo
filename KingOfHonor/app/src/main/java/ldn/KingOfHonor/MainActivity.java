@@ -3,9 +3,11 @@ package ldn.KingOfHonor;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
@@ -70,6 +72,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        //关闭键盘
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm.isActive()) {
+            imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_NOT_ALWAYS);
+        }
         mediaPlayer.start();
     }
 
@@ -77,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         mediaPlayer.pause();
+
     }
 
 
