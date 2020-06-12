@@ -9,4 +9,5 @@
     <color name="green">#008000</color><!--绿色 -->
     <color name="gray">#808080</color><!--灰色 -->
     <color name="black">#000000</color><!--黑色 -->
+    <color name="gainsboro">#DCDCDC</color><!--淡灰色 -->
 </resources>
